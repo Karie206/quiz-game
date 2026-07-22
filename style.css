@@ -1,0 +1,953 @@
+/* ===== Reset cơ bản ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== Biến thiết kế (design tokens) — chế độ sáng ===== */
+:root {
+    /* Gradient sáng rõ chiều sâu hơn: góc xanh đậm hơn, giữa sáng, không phẳng lì màu trắng */
+    --bg-gradient: linear-gradient(160deg, #c3e6b6 0%, #d9efcc 38%, #eef8e6 66%, #c9e6d4 100%);
+    --card-bg: #ffffff;
+    --text: #1f2d26;
+    --text-muted: #6b7c73;
+    --primary: #2e8b57;
+    --primary-dark: #256e45;
+    --primary-grad: linear-gradient(135deg, #34a06a, #2e8b57);
+    --soft: #eef7e7;
+    --softer: #f6fbf3;
+    --border: #dcecd2;
+    --correct-bg: #e4f9ec;
+    --correct-fg: #1f9d57;
+    --correct-border: #a7e7c2;
+    --incorrect-bg: #fdeaea;
+    --incorrect-fg: #d64545;
+    --incorrect-border: #f4bcbc;
+    --danger: #e0554e;
+    --gold-bg: #fff6e0;
+    --gold-fg: #b07500;
+    --shadow: 0 18px 45px rgba(31, 78, 52, 0.14);
+    --shadow-sm: 0 6px 16px rgba(31, 78, 52, 0.12);
+    --radius: 26px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    /* Màu thanh cuộn — tông sáng, hợp nền xanh nhạt */
+    --sb-track: #e6f1de;
+    --sb-thumb: #bcd8ad;
+    --sb-thumb-hover: #a1c58d;
+    /* Màu chấm nền (light) — xanh lá đậm hơn + rõ hơn để không trùng nền sáng */
+    --dot-color: rgba(38, 110, 69, 0.18);
+}
+
+/* ===== Chế độ tối — chỉ cần ghi đè biến ===== */
+body.dark {
+    --bg-gradient: linear-gradient(160deg, #16201b 0%, #1a231e 60%, #141c18 100%);
+    --card-bg: #232b27;
+    --text: #e7efe9;
+    --text-muted: #9fb0a6;
+    --primary: #46b47e;
+    --primary-dark: #3a9e6c;
+    --primary-grad: linear-gradient(135deg, #46b47e, #2e8b57);
+    --soft: #2c3630;
+    --softer: #28312c;
+    --border: #38443d;
+    --correct-bg: #1e3b2a;
+    --correct-fg: #6dd39b;
+    --correct-border: #2f5c42;
+    --incorrect-bg: #3b1e1e;
+    --incorrect-fg: #ef8a8a;
+    --incorrect-border: #5c2f2f;
+    --danger: #e56b64;
+    --gold-bg: #3a3320;
+    --gold-fg: #e8c268;
+    --shadow: 0 18px 45px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 6px 16px rgba(0, 0, 0, 0.4);
+    /* Màu chấm nền — xanh lá nhạt rất mờ trên nền tối */
+    --dot-color: rgba(140, 210, 175, 0.05);
+}
+
+/* Dark mode: ghi đè biến scrollbar ở cấp :root (thẻ html) để thanh cuộn của
+   cả trang cũng đổi màu — biến đặt trên body.dark không lan lên tới html.
+   track trùng nền tối, thumb xám tối hơn nền, hover sáng nhẹ. */
+:root:has(body.dark) {
+    --sb-track: #1e2621;
+    --sb-thumb: #3c4740;
+    --sb-thumb-hover: #56655b;
+}
+
+body {
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+    color: var(--text);
+    transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ===== Họa tiết lưới chấm mờ ở nền (tĩnh, đổi màu theo theme) ===== */
+/* Phủ trên gradient nhưng nằm DƯỚI card (z-index -1) nên không giảm tương phản chữ */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(var(--dot-color) 1.3px, transparent 1.4px);
+    background-size: 24px 24px;
+    /* Mờ dần về phía tâm để chấm không chọi vùng card ở giữa (tôn card) */
+    -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 45%, transparent 0%, #000 62%);
+    mask-image: radial-gradient(ellipse 75% 75% at 50% 45%, transparent 0%, #000 62%);
+}
+
+/* ===== Thanh cuộn (đổi màu theo theme qua biến CSS) ===== */
+/* Firefox: thuộc tính này kế thừa nên đặt ở html là đủ cho mọi vùng cuộn */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb) var(--sb-track);
+}
+
+/* Chrome / Edge / Safari */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--sb-track);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb);
+    border-radius: 999px; /* bo góc cho mềm */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--sb-thumb-hover); /* hover sáng nhẹ lên */
+}
+
+.container {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 640px;
+    overflow: hidden;
+    position: relative;
+    transition: background-color 0.4s ease;
+}
+
+/* ===== Màn hình + hiệu ứng chuyển ===== */
+.screen {
+    display: none;
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    text-align: center;
+}
+
+.screen.active {
+    display: block;
+    animation: fadeSlide 0.35s ease;
+}
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Kiểu chữ ===== */
+h1 {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: clamp(1.7rem, 5vw, 2.4rem);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-weight: 600;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== Nút chung ===== */
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, background-color 0.25s ease,
+        border-color 0.25s ease, color 0.25s ease;
+}
+
+.primary-btn {
+    background: var(--primary-grad);
+    color: #fff;
+    border-radius: var(--radius-md);
+    padding: 14px 28px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 22px rgba(46, 139, 87, 0.35);
+}
+
+.primary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.secondary-btn {
+    background-color: var(--soft);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 22px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.secondary-btn:hover {
+    background-color: var(--border);
+    transform: translateY(-2px);
+}
+
+.secondary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.danger-btn {
+    background-color: var(--danger);
+    color: #fff;
+    border-radius: var(--radius-md);
+    padding: 12px 22px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.danger-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(224, 85, 78, 0.35);
+}
+
+/* ===== Nút icon tròn (bánh răng) ===== */
+.icon-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background-color: var(--soft);
+    color: var(--primary);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 20;
+}
+
+.icon-btn:hover {
+    transform: rotate(45deg);
+    background-color: var(--border);
+}
+
+.icon-btn.hidden {
+    display: none;
+}
+
+/* ===== Màn hình Start ===== */
+/* Lưới 2 cột: trái là hero (chính), phải là leaderboard (phụ) */
+.start-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 1.75rem;
+    align-items: center;
+    text-align: left; /* bỏ center — tạo bố cục thật */
+}
+
+/* Cột trái: xếp dọc, căn lề trái */
+.start-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.start-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--primary-grad);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 1rem; /* căn trái, không còn auto */
+    box-shadow: var(--shadow-sm);
+}
+
+.start-icon i {
+    font-size: 32px;
+    color: #fff;
+}
+
+.start-hero h1 {
+    margin-bottom: 0.5rem;
+}
+
+.start-hero .subtitle {
+    margin-bottom: 1.25rem;
+}
+
+.start-badges {
+    display: flex;
+    justify-content: flex-start; /* căn trái */
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.75rem;
+}
+
+.badge {
+    background-color: var(--soft);
+    color: var(--primary-dark);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Chip điểm cao — tông vàng nhẹ để nổi hơn badge thường một chút */
+.badge-gold {
+    background-color: var(--gold-bg);
+    color: var(--gold-fg);
+}
+
+/* Nút Start là điểm nhấn chính: to, chiếm hết bề ngang cột trái */
+.start-btn-lg {
+    width: 100%;
+    padding: 16px 28px;
+    font-size: 1.1rem;
+}
+
+/* Cột phải: panel leaderboard nhẹ, phân cấp thấp hơn hero */
+.start-side {
+    background: var(--softer);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.15rem 1.1rem;
+}
+
+.start-side .leaderboard {
+    margin: 0;
+}
+
+.start-side .leaderboard h3 {
+    text-align: left;
+    font-size: 1rem;
+    margin-bottom: 0.85rem;
+}
+
+/* Trong panel, hàng xếp hạng làm dạng danh sách gọn (nhẹ hơn, có gạch phân cách) */
+.start-side .leaderboard-row {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    padding: 9px 2px;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.start-side .leaderboard-row:last-child {
+    border-bottom: none;
+}
+
+/* Điện thoại / màn hẹp: xếp dọc lại 1 cột */
+@media (max-width: 640px) {
+    .start-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+}
+
+/* ===== Màn chọn chủ đề / độ khó & Settings dùng chung ===== */
+.field {
+    text-align: left;
+    margin-bottom: 1.25rem;
+}
+
+.field-label,
+.setting-title {
+    display: block;
+    text-align: left;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.text-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: var(--softer);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.text-input:focus {
+    border-color: var(--primary);
+}
+
+.text-input::placeholder {
+    color: var(--text-muted);
+}
+
+.option-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.option-btn {
+    background-color: var(--softer);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    flex: 1;
+    min-width: 72px;
+}
+
+.option-btn:hover {
+    border-color: var(--primary);
+}
+
+.option-btn.selected {
+    background: var(--primary-grad);
+    color: #fff;
+    border-color: transparent;
+}
+
+.select-count {
+    color: var(--text-muted);
+    margin: 1.25rem 0;
+    font-size: 0.95rem;
+}
+
+.button-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.button-row .primary-btn,
+.button-row .secondary-btn {
+    flex: 1;
+}
+
+/* ===== Màn hình Quiz ===== */
+.quiz-header {
+    margin-bottom: 1.5rem;
+}
+
+.quiz-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.pill {
+    background-color: var(--soft);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pill-score {
+    color: var(--primary-dark);
+}
+
+.timer-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.timer-bar {
+    height: 9px;
+    background-color: var(--soft);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.timer-progress {
+    height: 100%;
+    width: 100%;
+    background: var(--primary-grad);
+    border-radius: 999px;
+    transition: width 1s linear;
+}
+
+.timer-progress.warning {
+    background: linear-gradient(135deg, #f5c15a, #f0ad4e);
+}
+
+.timer-progress.danger {
+    background: linear-gradient(135deg, #ec6a6a, #dc3545);
+}
+
+#question-text {
+    color: var(--text);
+    font-size: clamp(1.25rem, 4vw, 1.6rem);
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.answers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.answer-btn {
+    background-color: var(--softer);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.15rem;
+    font-size: 1rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+.answer-btn:hover {
+    border-color: var(--primary);
+    transform: translateX(5px);
+}
+
+.answer-btn.correct {
+    background-color: var(--correct-bg);
+    border-color: var(--correct-border);
+    color: var(--correct-fg);
+    font-weight: 600;
+}
+
+.answer-btn.incorrect {
+    background-color: var(--incorrect-bg);
+    border-color: var(--incorrect-border);
+    color: var(--incorrect-fg);
+    font-weight: 600;
+}
+
+.quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+.quiz-nav .secondary-btn {
+    flex: 1;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: var(--soft);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: var(--primary-grad);
+    width: 0%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+/* ===== Màn hình kết quả ===== */
+.result-info {
+    background-color: var(--soft);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.result-info p {
+    font-size: 1.15rem;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+}
+
+#result-message {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.highscore-note {
+    color: var(--gold-fg);
+    font-weight: 600;
+    margin-top: 8px;
+    min-height: 1.2em;
+}
+
+/* ===== Bảng thống kê ===== */
+.stats-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1.75rem;
+}
+
+.stat-item {
+    flex: 1;
+    min-width: 70px;
+    background-color: var(--softer);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* ===== Biểu đồ cột (thuần CSS) ===== */
+.chart {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.chart-bar-wrap {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    height: 160px;
+    width: 64px;
+}
+
+.chart-bar {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    min-height: 4px;
+    transition: height 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chart-caption {
+    position: absolute;
+    bottom: -26px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.correct-bar {
+    background: linear-gradient(180deg, #34d17f, #1f9d57);
+}
+
+.wrong-bar {
+    background: linear-gradient(180deg, #f07777, #dc3545);
+}
+
+/* ===== Bảng xếp hạng ===== */
+.leaderboard {
+    text-align: left;
+    margin: 1.5rem 0;
+}
+
+.leaderboard h3 {
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.leaderboard-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    background-color: var(--softer);
+    border: 1.5px solid var(--border);
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.leaderboard-rank {
+    font-weight: 700;
+    color: var(--primary);
+    margin-right: 10px;
+}
+
+.leaderboard-empty {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* ===== Xem lại bài làm ===== */
+.review-container {
+    text-align: left;
+    margin-bottom: 1.75rem;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.review-container h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.review-item {
+    background-color: var(--softer);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+}
+
+.review-question {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.review-your {
+    margin-bottom: 4px;
+}
+
+.review-your.right {
+    color: var(--correct-fg);
+}
+
+.review-your.wrong {
+    color: var(--incorrect-fg);
+}
+
+.review-correct {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* ===== Màn hình Cài đặt ===== */
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-block {
+    text-align: left;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-desc {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 2px;
+    margin-bottom: 10px;
+}
+
+.setting-row .setting-desc {
+    margin-bottom: 0;
+}
+
+#settings-done-btn {
+    margin-top: 1.75rem;
+    width: 100%;
+}
+
+/* Công tắc bật/tắt (toggle switch) */
+.switch {
+    flex-shrink: 0;
+    width: 54px;
+    height: 30px;
+    border-radius: 999px;
+    background-color: var(--border);
+    position: relative;
+    padding: 0;
+}
+
+.switch-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+    transition: left 0.25s ease;
+}
+
+.switch.on {
+    background: var(--primary-grad);
+}
+
+.switch.on .switch-knob {
+    left: 27px;
+}
+
+/* ===== Hộp xác nhận (modal) ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(20, 30, 24, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    z-index: 50;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
+}
+
+.modal-overlay.show .modal {
+    transform: scale(1);
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--incorrect-bg);
+    color: var(--danger);
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.modal h3 {
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.modal p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-actions button {
+    flex: 1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+    body {
+        padding: 0.5rem;
+    }
+
+    .container {
+        border-radius: 20px;
+    }
+
+    .quiz-info {
+        flex-direction: row;
+    }
+
+    .chart {
+        gap: 1.75rem;
+    }
+}

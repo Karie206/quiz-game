@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Quiz Game</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.35.0/tabler-icons.min.css"/>
+        <link rel="stylesheet" href="style.css"/>
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <!-- Nút bánh răng mở Cài đặt (góc trên phải) -->
+            <button id="gear-btn" class="icon-btn" title="Settings">
+                <i class="ti ti-settings"></i>
+            </button>
+
+            <!-- ===== Màn hình Start (bố cục 2 cột) ===== -->
+            <div class="screen active" id="start-screen">
+                <div class="start-grid">
+
+                    <!-- Cột trái: phần giới thiệu chính + nút Start -->
+                    <div class="start-hero">
+                        <div class="start-icon">
+                            <i class="ti ti-bulb"></i>
+                        </div>
+                        <h1>Quiz Game</h1>
+                        <p class="subtitle">Test your knowledge with these fun questions</p>
+
+                        <!-- Hàng chip thông tin gọn: số câu, cách tính điểm, điểm cao -->
+                        <div class="start-badges">
+                            <span class="badge"><i class="ti ti-list-check"></i> 27 questions</span>
+                            <span class="badge"><i class="ti ti-bolt"></i> Speed scoring</span>
+                            <span class="badge badge-gold"><i class="ti ti-trophy"></i> High score: <span id="start-highscore">0</span></span>
+                        </div>
+
+                        <button id="start-btn" class="primary-btn start-btn-lg">Start Quiz <i class="ti ti-arrow-right"></i></button>
+                    </div>
+
+                    <!-- Cột phải: bảng xếp hạng (phần phụ, nhẹ hơn) -->
+                    <aside class="start-side">
+                        <div id="start-leaderboard" class="leaderboard"></div>
+                    </aside>
+
+                </div>
+            </div>
+
+            <!-- ===== Màn hình chọn chủ đề + độ khó ===== -->
+            <div class="screen" id="select-screen">
+                <h1>Choose your quiz</h1>
+
+                <div class="field">
+                    <label class="field-label" for="player-name">Your name</label>
+                    <input type="text" id="player-name" class="text-input" placeholder="Enter your name" maxlength="20"/>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Topic</p>
+                    <div class="option-group" id="topic-group">
+                        <button class="option-btn selected" data-value="All">All</button>
+                        <button class="option-btn" data-value="History">History</button>
+                        <button class="option-btn" data-value="Science">Science</button>
+                        <button class="option-btn" data-value="Programming">Programming</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <p class="field-label">Difficulty</p>
+                    <div class="option-group" id="difficulty-group">
+                        <button class="option-btn selected" data-value="All">All</button>
+                        <button class="option-btn" data-value="Easy">Easy</button>
+                        <button class="option-btn" data-value="Medium">Medium</button>
+                        <button class="option-btn" data-value="Hard">Hard</button>
+                    </div>
+                </div>
+
+                <p id="select-count" class="select-count"></p>
+
+                <div class="button-row">
+                    <button id="back-btn" class="secondary-btn"><i class="ti ti-arrow-left"></i> Back</button>
+                    <button id="play-btn" class="primary-btn">Play <i class="ti ti-player-play"></i></button>
+                </div>
+            </div>
+
+            <!-- ===== Màn hình Quiz ===== -->
+            <div class="screen" id="quiz-screen">
+                <div class="quiz-header">
+                    <div class="quiz-info">
+                        <span class="pill">Question <span id="current-question">1</span> / <span id="total-question">5</span></span>
+                        <span class="pill pill-score"><i class="ti ti-star"></i> <span id="score">0</span></span>
+                    </div>
+
+                    <!-- Đồng hồ đếm ngược -->
+                    <div class="timer-info">
+                        <i class="ti ti-clock"></i>
+                        <span id="time-left">15</span>s
+                    </div>
+                    <div class="timer-bar">
+                        <div id="timer-progress" class="timer-progress"></div>
+                    </div>
+
+                    <h2 id="question-text">Question goes here</h2>
+                </div>
+
+                <div id="answer-container" class="answers-container">
+                    <!-- các nút đáp án được tạo bằng JS -->
+                </div>
+
+                <!-- Nút điều hướng: quay lại / bỏ qua -->
+                <div class="quiz-nav">
+                    <button id="prev-btn" class="secondary-btn"><i class="ti ti-arrow-left"></i> Previous</button>
+                    <button id="skip-btn" class="secondary-btn">Skip <i class="ti ti-player-skip-forward"></i></button>
+                </div>
+
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+            </div>
+
+            <!-- ===== Màn hình kết quả ===== -->
+            <div class="screen" id="result-screen">
+                <h1>Quiz Results</h1>
+                <div class="result-info">
+                    <p>You scored <span id="final-score">0</span> out of <span id="max-score">5</span></p>
+                    <div id="result-message">Good job!</div>
+                    <div id="highscore-note" class="highscore-note"></div>
+                </div>
+
+                <!-- Bảng thống kê cuối bài -->
+                <div class="stats-box">
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-correct">0</span>
+                        <span class="stat-label">Correct</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-wrong">0</span>
+                        <span class="stat-label">Wrong</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-accuracy">0%</span>
+                        <span class="stat-label">Accuracy</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-avgtime">0s</span>
+                        <span class="stat-label">Avg time</span>
+                    </div>
+                </div>
+
+                <!-- Biểu đồ cột đơn giản (vẽ bằng CSS) -->
+                <div class="chart">
+                    <div class="chart-bar-wrap">
+                        <div class="chart-bar correct-bar" id="chart-correct"></div>
+                        <span class="chart-caption">Correct</span>
+                    </div>
+                    <div class="chart-bar-wrap">
+                        <div class="chart-bar wrong-bar" id="chart-wrong"></div>
+                        <span class="chart-caption">Wrong</span>
+                    </div>
+                </div>
+
+                <!-- Bảng xếp hạng -->
+                <div id="result-leaderboard" class="leaderboard"></div>
+
+                <!-- Khu vực xem lại bài làm -->
+                <div id="review-container" class="review-container"></div>
+
+                <button id="restart-btn" class="primary-btn"><i class="ti ti-refresh"></i> Restart Quiz</button>
+            </div>
+
+            <!-- ===== Màn hình Cài đặt ===== -->
+            <div class="screen" id="settings-screen">
+                <h1>Settings</h1>
+
+                <!-- Bật/tắt âm thanh -->
+                <div class="setting-row">
+                    <div class="setting-text">
+                        <p class="setting-title">Sound</p>
+                        <p class="setting-desc">Play a sound on each answer</p>
+                    </div>
+                    <button class="switch" id="sound-switch" aria-label="Toggle sound"><span class="switch-knob"></span></button>
+                </div>
+
+                <!-- Chế độ sáng / tối -->
+                <div class="setting-row">
+                    <div class="setting-text">
+                        <p class="setting-title">Dark mode</p>
+                        <p class="setting-desc">Switch between light and dark theme</p>
+                    </div>
+                    <button class="switch" id="theme-switch" aria-label="Toggle dark mode"><span class="switch-knob"></span></button>
+                </div>
+
+                <!-- Thời gian mỗi câu -->
+                <div class="setting-block">
+                    <p class="setting-title">Time per question</p>
+                    <div class="option-group" id="time-group">
+                        <button class="option-btn" data-value="10">10s</button>
+                        <button class="option-btn" data-value="15">15s</button>
+                        <button class="option-btn" data-value="30">30s</button>
+                    </div>
+                </div>
+
+                <!-- Độ khó mặc định -->
+                <div class="setting-block">
+                    <p class="setting-title">Default difficulty</p>
+                    <div class="option-group" id="settings-difficulty-group">
+                        <button class="option-btn" data-value="All">All</button>
+                        <button class="option-btn" data-value="Easy">Easy</button>
+                        <button class="option-btn" data-value="Medium">Medium</button>
+                        <button class="option-btn" data-value="Hard">Hard</button>
+                    </div>
+                </div>
+
+                <!-- Xóa dữ liệu -->
+                <div class="setting-block">
+                    <p class="setting-title">Data</p>
+                    <p class="setting-desc">Reset your high score and leaderboard</p>
+                    <button id="clear-data-btn" class="danger-btn"><i class="ti ti-trash"></i> Clear data</button>
+                </div>
+
+                <button id="settings-done-btn" class="primary-btn">Done</button>
+            </div>
+
+            <!-- ===== Hộp xác nhận xóa dữ liệu ===== -->
+            <div class="modal-overlay" id="confirm-modal">
+                <div class="modal">
+                    <div class="modal-icon"><i class="ti ti-alert-triangle"></i></div>
+                    <h3>Clear all data?</h3>
+                    <p>This will erase your high score and leaderboard. This cannot be undone.</p>
+                    <div class="modal-actions">
+                        <button id="confirm-cancel" class="secondary-btn">Cancel</button>
+                        <button id="confirm-clear" class="danger-btn">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="script.js" defer></script>
+    </body>
+</html>

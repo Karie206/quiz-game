@@ -29,6 +29,7 @@ const startQuestionCount = document.getElementById("start-question-count");
 const startTimeValue = document.getElementById("start-time");
 const selectScreen = document.getElementById("select-screen");
 const playerNameInput = document.getElementById("player-name");
+const nameError = document.getElementById("name-error");
 const topicGroup = document.getElementById("topic-group");
 const difficultyGroup = document.getElementById("difficulty-group");
 const selectCount = document.getElementById("select-count");
@@ -1732,7 +1733,7 @@ let shuffleEnabled = true; // có trộn thứ tự câu hỏi hay không
 // Lựa chọn ở màn chọn chủ đề/độ khó
 let selectedTopic = "All";
 let selectedDifficulty = "All";
-let playerName = "Anonymous";
+let playerName = ""; // bắt buộc nhập ở màn Chọn quiz, không còn mặc định "Anonymous"
 
 // Điểm tối đa mỗi câu phụ thuộc thời gian đang cài đặt
 function getMaxPointsPerQuestion() {
@@ -1763,6 +1764,15 @@ pauseButton.addEventListener("click", openPause);
 resumeButton.addEventListener("click", resumeQuiz);
 finishButton.addEventListener("click", finishNow);
 quitButton.addEventListener("click", quitQuiz);
+
+// Ô nhập tên: gõ tới đâu xoá lỗi tới đó, nhấn Enter là chơi luôn
+playerNameInput.addEventListener("input", clearNameError);
+playerNameInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    startQuiz();
+  }
+});
 
 // Phím Esc: mở hộp Paused khi đang làm bài, bấm lại để chơi tiếp
 document.addEventListener("keydown", (event) => {
@@ -1964,12 +1974,51 @@ function getFilteredQuestions() {
   return filtered;
 }
 
-function startQuiz() {
-  // Lấy tên người chơi (mặc định "Anonymous" nếu để trống)
-  playerName = playerNameInput.value.trim();
-  if (playerName === "") {
-    playerName = "Anonymous";
+// Quy tắc tên hợp lệ: bắt buộc nhập, tối thiểu 2 ký tự (đã bỏ khoảng trắng thừa).
+// Trả về chuỗi lỗi, hoặc "" nếu hợp lệ. Hàm thuần, không đụng vào giao diện.
+function getNameError(value) {
+  if (value === "") {
+    return "Please enter your name to play.";
   }
+  if (value.length < 2) {
+    return "Name must be at least 2 characters.";
+  }
+  return "";
+}
+
+// Kiểm tra ô nhập tên và hiện lỗi lên giao diện
+// Trả về true nếu hợp lệ
+function validatePlayerName() {
+  const message = getNameError(playerNameInput.value.trim());
+  if (message !== "") {
+    showNameError(message);
+    return false;
+  }
+  clearNameError();
+  return true;
+}
+
+// Hiện lỗi dưới ô nhập tên và đưa con trỏ về ô đó
+function showNameError(message) {
+  nameError.textContent = message;
+  nameError.classList.add("show");
+  playerNameInput.classList.add("invalid");
+  playerNameInput.focus();
+}
+
+// Xoá trạng thái lỗi
+function clearNameError() {
+  nameError.textContent = "";
+  nameError.classList.remove("show");
+  playerNameInput.classList.remove("invalid");
+}
+
+function startQuiz() {
+  // Bắt buộc có tên mới được chơi
+  if (!validatePlayerName()) {
+    return;
+  }
+  playerName = playerNameInput.value.trim();
 
   const filtered = getFilteredQuestions();
   // An toàn: không có câu nào thì không bắt đầu
@@ -2371,6 +2420,7 @@ function goToSelectScreen() {
   startScreen.classList.remove("active");
   selectScreen.classList.add("active");
   setGearVisible(true);
+  clearNameError(); // vào lại màn này thì bỏ lỗi cũ
   updateSelectCount();
 }
 
@@ -2667,6 +2717,13 @@ function renderLeaderboard(container) {
 
 function restartQuiz() {
   resultScreen.classList.remove("active");
+  // Tên vẫn còn từ lượt trước nên bình thường sẽ hợp lệ. Nếu không,
+  // đưa về màn Chọn quiz để nhập lại — tránh ẩn hết màn hình thành trang trắng.
+  if (getNameError(playerNameInput.value.trim()) !== "") {
+    goToSelectScreen();
+    validatePlayerName();
+    return;
+  }
   startQuiz();
 }
 

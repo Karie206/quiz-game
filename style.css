@@ -543,6 +543,30 @@ body.dark .btn-soft {
     color: var(--text-muted);
 }
 
+/* Ô nhập bị lỗi: viền đỏ, giữ nguyên cả khi đang focus */
+.text-input.invalid,
+.text-input.invalid:focus {
+    border-color: var(--incorrect-border);
+    background-color: var(--incorrect-bg);
+}
+
+/* Dòng báo lỗi: chiếm sẵn chỗ nên hiện/ẩn không làm nhảy bố cục */
+.field-error {
+    min-height: 1.15rem;
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: var(--incorrect-fg);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.field-error.show {
+    opacity: 1;
+}
+
 .option-group {
     display: flex;
     flex-wrap: wrap;

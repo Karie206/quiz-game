@@ -223,9 +223,10 @@ button {
     box-shadow: var(--shadow-sm);
 }
 
+/* Hover: chỉ nhô lên, giữ nguyên bóng đổ gốc (--shadow-sm) —
+   không thêm quầng sáng màu phía sau */
 .primary-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 22px rgba(46, 139, 87, 0.35);
 }
 
 .primary-btn:disabled {
@@ -249,7 +250,6 @@ button {
 }
 
 .secondary-btn:hover {
-    background-color: var(--border);
     transform: translateY(-2px);
 }
 
@@ -269,10 +269,8 @@ button {
     box-shadow: none;
 }
 
-.btn-soft:hover {
-    background: var(--border);
-    box-shadow: none;
-}
+/* Không cần .btn-soft:hover riêng nữa — hiệu ứng nhô lên đã lấy từ
+   .primary-btn:hover, và nút này vốn không có bóng đổ */
 
 /* Dark mode: các biến --soft / --border / --primary-dark đã tự đổi theo
    body.dark, chỉ cần làm chữ sáng hơn cho dễ đọc trên nền tối */
@@ -294,7 +292,6 @@ body.dark .btn-soft {
 
 .danger-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(224, 85, 78, 0.35);
 }
 
 /* ===== Nút icon tròn (bánh răng) ===== */
@@ -635,7 +632,6 @@ body.dark .btn-soft {
 }
 
 .pill-btn:hover {
-    background-color: var(--border);
     transform: translateY(-2px);
 }
 
@@ -985,9 +981,11 @@ body.dark .btn-soft {
     margin-right: calc(16px - clamp(1.5rem, 4vw, 2.75rem));
 }
 
-/* Bỏ hiệu ứng xoay 45° của bánh răng — dấu X xoay trông rất lạ */
+/* Xoay khi rê chuột giống bánh răng, nhưng dùng 90° thay vì 45°:
+   dấu X đối xứng qua 90° nên quay xong vẫn là dấu X, chỉ thấy cú xoay mượt.
+   Nếu để 45° như bánh răng thì dấu X sẽ biến thành dấu cộng. */
 .close-btn:hover {
-    transform: none;
+    transform: rotate(90deg);
 }
 
 .setting-row {

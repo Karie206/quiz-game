@@ -93,6 +93,10 @@
                     <div class="quiz-info">
                         <span class="pill">Question <span id="current-question">1</span> / <span id="total-question">5</span></span>
                         <span class="pill pill-score"><i class="ti ti-star"></i> <span id="score">0</span></span>
+                        <!-- Tạm dừng: mở hộp Paused (Resume / Finish now / Quit) -->
+                        <button id="pause-btn" class="pill pill-btn" title="Pause (Esc)">
+                            <i class="ti ti-player-pause"></i>
+                        </button>
                     </div>
 
                     <!-- Đồng hồ đếm ngược -->
@@ -169,7 +173,10 @@
                 <!-- Khu vực xem lại bài làm -->
                 <div id="review-container" class="review-container"></div>
 
-                <button id="restart-btn" class="primary-btn"><i class="ti ti-refresh"></i> Restart Quiz</button>
+                <div class="result-actions">
+                    <button id="restart-btn" class="primary-btn"><i class="ti ti-refresh"></i> Restart Quiz</button>
+                    <button id="home-btn" class="primary-btn btn-soft"><i class="ti ti-home"></i> Home</button>
+                </div>
             </div>
 
             <!-- ===== Màn hình Cài đặt ===== -->
@@ -235,6 +242,33 @@
                         <button id="confirm-cancel" class="secondary-btn">Cancel</button>
                         <button id="confirm-clear" class="danger-btn">Clear</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- ===== Hộp Tạm dừng khi đang làm bài ===== -->
+            <div class="modal-overlay" id="pause-modal">
+                <div class="modal">
+                    <div class="modal-icon modal-icon-pause"><i class="ti ti-player-pause"></i></div>
+                    <h3>Paused</h3>
+                    <p>
+                        Question <span id="pause-question">1</span> / <span id="pause-total">10</span>
+                        · Score <span id="pause-score">0</span>
+                    </p>
+                    <div class="modal-actions modal-actions-stack">
+                        <button id="resume-btn" class="primary-btn">
+                            <i class="ti ti-player-play"></i> Resume
+                        </button>
+                        <button id="finish-btn" class="secondary-btn">
+                            <i class="ti ti-flag-check"></i> Finish now
+                        </button>
+                        <button id="quit-btn" class="danger-btn">
+                            <i class="ti ti-door-exit"></i> Quit
+                        </button>
+                    </div>
+                    <p class="modal-hint">
+                        Finish now: unanswered questions count as wrong.<br/>
+                        Quit: this round is discarded and no score is saved.
+                    </p>
                 </div>
             </div>
 

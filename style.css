@@ -255,6 +255,27 @@ button {
     transform: none;
 }
 
+/* Biến thể nhạt của .primary-btn: dùng đúng bộ màu của nút "Finish now"
+   (.secondary-btn) nhưng chữ lấy màu xanh chủ đạo. Đặt sau .primary-btn
+   để ghi đè được nền gradient và chữ trắng. */
+.btn-soft {
+    background: var(--soft);
+    color: var(--primary-dark);
+    border: 1.5px solid var(--border);
+    box-shadow: none;
+}
+
+.btn-soft:hover {
+    background: var(--border);
+    box-shadow: none;
+}
+
+/* Dark mode: các biến --soft / --border / --primary-dark đã tự đổi theo
+   body.dark, chỉ cần làm chữ sáng hơn cho dễ đọc trên nền tối */
+body.dark .btn-soft {
+    color: var(--primary);
+}
+
 .danger-btn {
     background-color: var(--danger);
     color: #fff;
@@ -523,6 +544,25 @@ button {
     color: var(--primary-dark);
 }
 
+/* Nút Pause dạng viên thuốc, nằm cùng hàng với 2 pill thông tin */
+.pill-btn {
+    color: var(--primary);
+    padding: 7px 12px;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.pill-btn:hover {
+    background-color: var(--border);
+    transform: translateY(-2px);
+}
+
+.pill-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .timer-info {
     display: flex;
     align-items: center;
@@ -629,6 +669,13 @@ button {
 }
 
 /* ===== Màn hình kết quả ===== */
+.result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 .result-info {
     background-color: var(--soft);
     border-radius: var(--radius-md);
@@ -942,6 +989,26 @@ button {
 
 .modal-actions button {
     flex: 1;
+}
+
+/* Biến thể icon cho hộp Paused: dùng tông xanh chủ đạo thay vì đỏ cảnh báo */
+.modal-icon-pause {
+    background-color: var(--soft);
+    color: var(--primary);
+}
+
+/* 3 lựa chọn xếp dọc cho hộp Paused */
+.modal-actions-stack {
+    flex-direction: column;
+}
+
+/* Dòng giải thích nhỏ dưới các nút của hộp Paused */
+.modal-hint {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    margin-bottom: 0;
 }
 
 /* ===== Responsive ===== */

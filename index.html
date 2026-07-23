@@ -24,7 +24,7 @@
             <div class="screen active" id="start-screen">
                 <div class="start-grid">
 
-                    <!-- Cột trái: phần giới thiệu chính + nút Start -->
+                    <!-- Cột trái: phần giới thiệu chính + nút Start (nút bị đẩy xuống đáy cột) -->
                     <div class="start-hero">
                         <div class="start-icon">
                             <i class="ti ti-bulb"></i>
@@ -32,19 +32,25 @@
                         <h1>Quiz Game</h1>
                         <p class="subtitle">Test your knowledge with these fun questions</p>
 
-                        <!-- Hàng chip thông tin gọn: số câu, cách tính điểm, điểm cao -->
+                        <!-- 3 badge nằm gọn trên MỘT hàng: số câu · tính điểm theo tốc độ · thời gian mỗi câu -->
                         <div class="start-badges">
-                            <span class="badge"><i class="ti ti-list-check"></i> 27 questions</span>
-                            <span class="badge"><i class="ti ti-bolt"></i> Speed scoring</span>
-                            <span class="badge badge-gold"><i class="ti ti-trophy"></i> High score: <span id="start-highscore">0</span></span>
+                            <span class="badge" title="Số câu hỏi hiện có"><i class="ti ti-list-check"></i> <span id="start-question-count">27</span> questions</span>
+                            <span class="badge" title="Trả lời càng nhanh điểm càng cao"><i class="ti ti-bolt"></i> Speed bonus</span>
+                            <span class="badge" title="Thời gian cho mỗi câu"><i class="ti ti-clock"></i> <span id="start-time">15</span>s each</span>
                         </div>
 
                         <button id="start-btn" class="primary-btn start-btn-lg">Start Quiz <i class="ti ti-arrow-right"></i></button>
                     </div>
 
-                    <!-- Cột phải: bảng xếp hạng (phần phụ, nhẹ hơn) -->
+                    <!-- Cột phải: bảng xếp hạng + dòng điểm cao nhất ở đáy khung -->
                     <aside class="start-side">
                         <div id="start-leaderboard" class="leaderboard"></div>
+
+                        <!-- Điểm cao nhất: nhãn bên trái, con số bên phải, ngăn bằng gạch mảnh -->
+                        <div class="start-highscore">
+                            <span class="start-highscore-label">High score</span>
+                            <span class="start-highscore-value" id="start-highscore">0</span>
+                        </div>
                     </aside>
 
                 </div>

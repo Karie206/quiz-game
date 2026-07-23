@@ -320,20 +320,28 @@ body.dark .btn-soft {
 }
 
 /* ===== Màn hình Start ===== */
-/* Lưới 2 cột: trái là hero (chính), phải là leaderboard (phụ) */
+/* Riêng màn Start dùng card rộng hơn để 2 cột có đủ chỗ thở.
+   Các màn còn lại vẫn giữ max-width 640px như cũ. */
+.container:has(#start-screen.active) {
+    max-width: 720px;
+}
+
+/* Lưới 2 cột: trái là hero (chính), phải là leaderboard (phụ).
+   align-items: stretch để HAI CỘT LUÔN CAO BẰNG NHAU. */
 .start-grid {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-columns: 1.15fr 0.85fr;
     gap: 1.75rem;
-    align-items: center;
+    align-items: stretch;
     text-align: left; /* bỏ center — tạo bố cục thật */
 }
 
-/* Cột trái: xếp dọc, căn lề trái */
+/* Cột trái: xếp dọc, căn lề trái, cao hết ô lưới để đẩy được nút Start xuống đáy */
 .start-hero {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    height: 100%;
 }
 
 .start-icon {
@@ -361,55 +369,96 @@ body.dark .btn-soft {
     margin-bottom: 1.25rem;
 }
 
+/* Hàng badge: nowrap để 3 chip luôn nằm cùng một dòng, không rớt xuống */
 .start-badges {
     display: flex;
     justify-content: flex-start; /* căn trái */
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 1.75rem;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-bottom: 1.5rem;
 }
 
+/* Chip nhỏ lại (12px + padding 5px 11px) để 3 cái đủ chỗ trên một hàng */
 .badge {
     background-color: var(--soft);
     color: var(--primary-dark);
-    font-size: 0.82rem;
+    font-size: 12px;
     font-weight: 500;
-    padding: 7px 14px;
+    padding: 5px 11px;
     border-radius: 999px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
+    white-space: nowrap; /* chữ trong chip không được ngắt dòng */
 }
 
-/* Chip điểm cao — tông vàng nhẹ để nổi hơn badge thường một chút */
-.badge-gold {
-    background-color: var(--gold-bg);
-    color: var(--gold-fg);
+.badge i {
+    font-size: 14px;
 }
 
-/* Nút Start là điểm nhấn chính: to, chiếm hết bề ngang cột trái */
+/* Nút Start: gọn khoảng 190px, margin-top:auto đẩy xuống đáy cột trái
+   để chân nút thẳng hàng với đáy khung Leaderboard bên phải */
 .start-btn-lg {
-    width: 100%;
-    padding: 16px 28px;
-    font-size: 1.1rem;
+    width: 190px;
+    max-width: 100%;
+    margin-top: auto;
+    padding: 14px 24px;
+    font-size: 1.05rem;
 }
 
-/* Cột phải: panel leaderboard nhẹ, phân cấp thấp hơn hero */
+/* Cột phải: panel leaderboard nhẹ, phân cấp thấp hơn hero.
+   Flex column: tiêu đề trên — danh sách giữa (flex:1) — điểm cao nhất dưới đáy. */
 .start-side {
     background: var(--softer);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 1.15rem 1.1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .start-side .leaderboard {
     margin: 0;
+    flex: 1; /* khung danh sách giãn đầy phần còn lại của cột */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .start-side .leaderboard h3 {
     text-align: left;
     font-size: 1rem;
     margin-bottom: 0.85rem;
+}
+
+/* Phần nội dung giữa của leaderboard — giãn đầy để đẩy dòng điểm cao xuống đáy */
+.start-side .leaderboard-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Dòng điểm cao nhất ở ĐÁY khung, tách bằng gạch ngang mảnh */
+.start-highscore {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 0.9rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+}
+
+.start-highscore-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.start-highscore-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary);
 }
 
 /* Trong panel, hàng xếp hạng làm dạng danh sách gọn (nhẹ hơn, có gạch phân cách) */
@@ -427,11 +476,33 @@ body.dark .btn-soft {
     border-bottom: none;
 }
 
-/* Điện thoại / màn hẹp: xếp dọc lại 1 cột */
-@media (max-width: 640px) {
+/* Màn hẹp: 2 cột xếp dọc lại thành 1 cột (và card trở về bề ngang thường) */
+@media (max-width: 800px) {
+    .container:has(#start-screen.active) {
+        max-width: 640px;
+    }
+
     .start-grid {
         grid-template-columns: 1fr;
         gap: 1.25rem;
+    }
+
+    /* Hết chỗ trống để đẩy nút xuống đáy — dùng khoảng cách cố định cho gọn */
+    .start-btn-lg {
+        margin-top: 0.25rem;
+    }
+}
+
+/* Điện thoại rất hẹp: thu nhỏ chip thêm chút; nếu vẫn không đủ chỗ thì
+   mới cho phép xuống dòng (ưu tiên đọc được hơn là tràn khỏi khung) */
+@media (max-width: 420px) {
+    .start-badges {
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        font-size: 11px;
+        padding: 4px 9px;
     }
 }
 
@@ -806,9 +877,34 @@ body.dark .btn-soft {
     margin-right: 10px;
 }
 
+/* Trạng thái rỗng: icon cúp mờ + chữ nhỏ, tự căn giữa khung nhờ margin:auto */
 .leaderboard-empty {
+    margin: auto;
     text-align: center;
     color: var(--text-muted);
+    padding: 1.25rem 0;
+}
+
+.leaderboard-empty-icon {
+    display: block;
+    font-size: 36px;
+    color: var(--primary);
+    opacity: 0.28; /* làm mờ để không tranh chấp với nội dung chính */
+    margin-bottom: 10px;
+}
+
+.leaderboard-empty-text {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.leaderboard-empty-hint {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    opacity: 0.75;
+    margin-top: 3px;
+    line-height: 1.45;
 }
 
 /* ===== Xem lại bài làm ===== */

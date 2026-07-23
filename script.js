@@ -25,6 +25,8 @@ const reviewContainer = document.getElementById("review-container");
 // DOM elements mới cho Nhóm 2
 const startHighScore = document.getElementById("start-highscore");
 const startLeaderboard = document.getElementById("start-leaderboard");
+const startQuestionCount = document.getElementById("start-question-count");
+const startTimeValue = document.getElementById("start-time");
 const selectScreen = document.getElementById("select-screen");
 const playerNameInput = document.getElementById("player-name");
 const topicGroup = document.getElementById("topic-group");
@@ -1777,6 +1779,7 @@ setupOptionGroup(difficultyGroup, function (value) {
 setupOptionGroup(timeGroup, function (value) {
   timePerQuestion = Number(value);
   localStorage.setItem(TIME_KEY, value);
+  updateStartBadges(); // badge thời gian ở màn Start phải khớp cài đặt
 });
 setupOptionGroup(settingsDifficultyGroup, function (value) {
   selectedDifficulty = value;
@@ -1816,9 +1819,16 @@ if (savedDifficulty !== null) {
 selectOption(settingsDifficultyGroup, selectedDifficulty);
 selectOption(difficultyGroup, selectedDifficulty);
 
-// Hiển thị điểm cao và bảng xếp hạng ở màn start
+// Hiển thị điểm cao, badge và bảng xếp hạng ở màn start
 startHighScore.textContent = getHighScore();
+updateStartBadges();
 renderLeaderboard(startLeaderboard);
+
+// Cập nhật 2 badge động ở màn Start: tổng số câu hỏi và thời gian mỗi câu
+function updateStartBadges() {
+  startQuestionCount.textContent = quizQuestions.length;
+  startTimeValue.textContent = timePerQuestion;
+}
 
 // ===== Hàm trộn mảng (thuật toán Fisher–Yates) =====
 function shuffle(array) {
@@ -2543,11 +2553,31 @@ function renderLeaderboard(container) {
   title.textContent = "Leaderboard";
   container.appendChild(title);
 
+  // Phần nội dung giữa: ở màn Start nó dùng flex:1 để giãn đầy khung
+  const body = document.createElement("div");
+  body.classList.add("leaderboard-body");
+  container.appendChild(body);
+
   if (list.length === 0) {
-    const empty = document.createElement("p");
+    // Khung rỗng: icon cúp mờ ở giữa + dòng chữ nhỏ gợi ý
+    const empty = document.createElement("div");
     empty.classList.add("leaderboard-empty");
-    empty.textContent = "No scores yet. Be the first!";
-    container.appendChild(empty);
+
+    const icon = document.createElement("i");
+    icon.className = "ti ti-trophy leaderboard-empty-icon";
+
+    const text = document.createElement("p");
+    text.classList.add("leaderboard-empty-text");
+    text.textContent = "No scores yet";
+
+    const hint = document.createElement("p");
+    hint.classList.add("leaderboard-empty-hint");
+    hint.textContent = "Play a round to claim the top spot";
+
+    empty.appendChild(icon);
+    empty.appendChild(text);
+    empty.appendChild(hint);
+    body.appendChild(empty);
     return;
   }
 
@@ -2571,7 +2601,7 @@ function renderLeaderboard(container) {
 
     row.appendChild(left);
     row.appendChild(right);
-    container.appendChild(row);
+    body.appendChild(row);
   });
 }
 

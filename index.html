@@ -187,6 +187,12 @@
 
             <!-- ===== Màn hình Cài đặt ===== -->
             <div class="screen" id="settings-screen">
+
+                <!-- Nút X đóng Cài đặt (góc trên phải) -->
+                <button id="settings-close-btn" class="icon-btn close-btn" title="Close">
+                    <i class="ti ti-x"></i>
+                </button>
+
                 <h1>Settings</h1>
 
                 <!-- Bật/tắt âm thanh -->
@@ -217,6 +223,27 @@
                     </div>
                 </div>
 
+                <!-- Số câu hỏi mỗi lượt chơi -->
+                <div class="setting-block">
+                    <p class="setting-title">Questions per round</p>
+                    <div class="option-group" id="question-count-group">
+                        <button class="option-btn" data-value="10">10</button>
+                        <button class="option-btn" data-value="20">20</button>
+                        <button class="option-btn" data-value="all">All</button>
+                    </div>
+                </div>
+
+                <!-- Chủ đề mặc định (đồng bộ với màn Chọn quiz) -->
+                <div class="setting-block">
+                    <p class="setting-title">Topic</p>
+                    <div class="option-group" id="settings-topic-group">
+                        <button class="option-btn" data-value="All">All</button>
+                        <button class="option-btn" data-value="History">History</button>
+                        <button class="option-btn" data-value="Science">Science</button>
+                        <button class="option-btn" data-value="Programming">Programming</button>
+                    </div>
+                </div>
+
                 <!-- Độ khó mặc định -->
                 <div class="setting-block">
                     <p class="setting-title">Default difficulty</p>
@@ -228,14 +255,21 @@
                     </div>
                 </div>
 
+                <!-- Trộn thứ tự câu hỏi -->
+                <div class="setting-row">
+                    <div class="setting-text">
+                        <p class="setting-title">Shuffle questions</p>
+                        <p class="setting-desc">Randomize the question order each round</p>
+                    </div>
+                    <button class="switch" id="shuffle-switch" aria-label="Toggle shuffle"><span class="switch-knob"></span></button>
+                </div>
+
                 <!-- Xóa dữ liệu -->
                 <div class="setting-block">
                     <p class="setting-title">Data</p>
                     <p class="setting-desc">Reset your high score and leaderboard</p>
                     <button id="clear-data-btn" class="danger-btn"><i class="ti ti-trash"></i> Clear data</button>
                 </div>
-
-                <button id="settings-done-btn" class="primary-btn">Done</button>
             </div>
 
             <!-- ===== Hộp xác nhận xóa dữ liệu ===== -->

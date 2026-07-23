@@ -50,8 +50,11 @@ const soundSwitch = document.getElementById("sound-switch");
 const themeSwitch = document.getElementById("theme-switch");
 const timeGroup = document.getElementById("time-group");
 const settingsDifficultyGroup = document.getElementById("settings-difficulty-group");
+const questionCountGroup = document.getElementById("question-count-group");
+const settingsTopicGroup = document.getElementById("settings-topic-group");
+const shuffleSwitch = document.getElementById("shuffle-switch");
+const settingsCloseButton = document.getElementById("settings-close-btn");
 const clearDataButton = document.getElementById("clear-data-btn");
-const settingsDoneButton = document.getElementById("settings-done-btn");
 const confirmModal = document.getElementById("confirm-modal");
 const confirmCancelButton = document.getElementById("confirm-cancel");
 const confirmClearButton = document.getElementById("confirm-clear");
@@ -1696,7 +1699,7 @@ const quizQuestions = [
 
 // ===== Hằng số cấu hình =====
 const BASE_POINTS = 10; // điểm cơ bản khi trả lời đúng
-const MAX_QUESTIONS_PER_ROUND = 10; // số câu tối đa mỗi lượt chơi
+const DEFAULT_QUESTIONS_PER_ROUND = 10; // số câu mỗi lượt khi chưa chỉnh Cài đặt
 
 // Các khóa dùng cho localStorage
 const HIGH_SCORE_KEY = "quizHighScore";
@@ -1705,6 +1708,9 @@ const THEME_KEY = "quizTheme";
 const SOUND_KEY = "quizSound";
 const TIME_KEY = "quizTime";
 const DIFFICULTY_KEY = "quizDifficulty";
+const QUESTION_COUNT_KEY = "quizQuestionCount";
+const TOPIC_KEY = "quizTopic";
+const SHUFFLE_KEY = "quizShuffle";
 
 // ===== Biến trạng thái =====
 let currentQuestionIndex = 0;
@@ -1720,6 +1726,8 @@ let audioContext = null; // Web Audio API context (tạo khi cần)
 let previousScreen = null; // màn hình trước khi mở Cài đặt (để quay lại)
 let isPaused = false; // đang mở hộp Paused hay không
 let timerWasRunning = false; // đồng hồ có đang chạy lúc bấm Pause không (để Resume đúng)
+let questionsPerRound = DEFAULT_QUESTIONS_PER_ROUND; // số câu mỗi lượt: số, hoặc "all" = lấy hết
+let shuffleEnabled = true; // có trộn thứ tự câu hỏi hay không
 
 // Lựa chọn ở màn chọn chủ đề/độ khó
 let selectedTopic = "All";
@@ -1742,9 +1750,10 @@ skipButton.addEventListener("click", handleSkipOrNext);
 
 // Cài đặt
 gearButton.addEventListener("click", openSettings);
-settingsDoneButton.addEventListener("click", closeSettings);
+settingsCloseButton.addEventListener("click", closeSettings);
 soundSwitch.addEventListener("click", toggleSound);
 themeSwitch.addEventListener("click", toggleTheme);
+shuffleSwitch.addEventListener("click", toggleShuffle);
 clearDataButton.addEventListener("click", openConfirm);
 confirmCancelButton.addEventListener("click", closeConfirm);
 confirmClearButton.addEventListener("click", clearAllData);
@@ -1788,6 +1797,20 @@ setupOptionGroup(settingsDifficultyGroup, function (value) {
   selectOption(difficultyGroup, value);
 });
 
+// Số câu hỏi mỗi lượt: "10" / "20" / "all"
+setupOptionGroup(questionCountGroup, function (value) {
+  questionsPerRound = value === "all" ? "all" : Number(value);
+  localStorage.setItem(QUESTION_COUNT_KEY, value);
+});
+
+// Chủ đề mặc định ở màn Cài đặt (có lưu localStorage)
+setupOptionGroup(settingsTopicGroup, function (value) {
+  selectedTopic = value;
+  localStorage.setItem(TOPIC_KEY, value);
+  // đồng bộ lựa chọn sang màn Chọn quiz
+  selectOption(topicGroup, value);
+});
+
 // ===== Khởi tạo khi tải trang: đọc cài đặt từ localStorage =====
 // Âm thanh (mặc định bật)
 if (localStorage.getItem(SOUND_KEY) === "off") {
@@ -1818,6 +1841,29 @@ if (savedDifficulty !== null) {
 }
 selectOption(settingsDifficultyGroup, selectedDifficulty);
 selectOption(difficultyGroup, selectedDifficulty);
+
+// Số câu hỏi mỗi lượt (mặc định 10)
+const savedQuestionCount = localStorage.getItem(QUESTION_COUNT_KEY);
+if (savedQuestionCount !== null) {
+  questionsPerRound = savedQuestionCount === "all" ? "all" : Number(savedQuestionCount);
+}
+selectOption(questionCountGroup, String(questionsPerRound));
+
+// Chủ đề mặc định (mặc định "All")
+const savedTopic = localStorage.getItem(TOPIC_KEY);
+if (savedTopic !== null) {
+  selectedTopic = savedTopic;
+}
+selectOption(settingsTopicGroup, selectedTopic);
+selectOption(topicGroup, selectedTopic);
+
+// Trộn câu hỏi (mặc định bật)
+if (localStorage.getItem(SHUFFLE_KEY) === "off") {
+  shuffleEnabled = false;
+} else {
+  shuffleEnabled = true;
+}
+updateSwitch(shuffleSwitch, shuffleEnabled);
 
 // Hiển thị điểm cao, badge và bảng xếp hạng ở màn start
 startHighScore.textContent = getHighScore();
@@ -1886,6 +1932,17 @@ function toggleSound() {
   }
 }
 
+// Bật/tắt trộn câu hỏi, cập nhật công tắc và lưu lại
+function toggleShuffle() {
+  shuffleEnabled = !shuffleEnabled;
+  updateSwitch(shuffleSwitch, shuffleEnabled);
+  if (shuffleEnabled) {
+    localStorage.setItem(SHUFFLE_KEY, "on");
+  } else {
+    localStorage.setItem(SHUFFLE_KEY, "off");
+  }
+}
+
 // Lọc câu hỏi theo chủ đề + độ khó, trộn và giới hạn số câu mỗi lượt
 function getFilteredQuestions() {
   let filtered = quizQuestions.filter((q) => {
@@ -1894,11 +1951,14 @@ function getFilteredQuestions() {
     return topicOk && diffOk;
   });
 
-  filtered = shuffle(filtered);
+  // Chỉ trộn khi bật "Shuffle questions" ở Cài đặt
+  if (shuffleEnabled) {
+    filtered = shuffle(filtered);
+  }
 
-  // Giới hạn số câu tối đa mỗi lượt
-  if (filtered.length > MAX_QUESTIONS_PER_ROUND) {
-    filtered = filtered.slice(0, MAX_QUESTIONS_PER_ROUND);
+  // Giới hạn số câu mỗi lượt theo Cài đặt ("all" = lấy hết)
+  if (questionsPerRound !== "all" && filtered.length > questionsPerRound) {
+    filtered = filtered.slice(0, questionsPerRound);
   }
 
   return filtered;

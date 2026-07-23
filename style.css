@@ -137,7 +137,11 @@ html {
     box-shadow: var(--shadow);
     width: 100%;
     max-width: 640px;
+    /* clip cắt góc bo giống hidden nhưng KHÔNG tạo scroll container,
+       nhờ vậy nút X trong Cài đặt mới sticky được theo viewport.
+       Dòng hidden ở trên để dự phòng cho trình duyệt cũ chưa hỗ trợ clip. */
     overflow: hidden;
+    overflow: clip;
     position: relative;
     transition: background-color 0.4s ease;
 }
@@ -553,11 +557,18 @@ body.dark .btn-soft {
     color: var(--text);
     border: 1.5px solid var(--border);
     border-radius: 999px;
-    padding: 9px 18px;
+    padding: 9px 14px;
     font-size: 0.95rem;
     font-weight: 500;
-    flex: 1;
-    min-width: 72px;
+    /* flex-basis: auto -> nút rộng theo nội dung rồi mới chia đều phần dư.
+       Nếu để flex: 1 (basis 0) thì 4 nút bị ép bằng nhau và chữ dài
+       như "Programming" sẽ tràn ra ngoài nút. */
+    flex: 1 0 auto;
+    min-width: 64px;
+    white-space: nowrap; /* chữ dài thì xuống hàng mới, không vỡ trong nút */
+    /* Nút luôn rộng hơn chữ nên phải căn giữa; nếu không, Chrome sẽ cho
+       chữ kế thừa text-align: left của khối cha */
+    text-align: center;
 }
 
 .option-btn:hover {
@@ -954,6 +965,31 @@ body.dark .btn-soft {
 }
 
 /* ===== Màn hình Cài đặt ===== */
+/* Tiêu đề căn trái cho thẳng hàng với các mục bên dưới,
+   chừa lề phải để không đè lên nút X */
+#settings-screen h1 {
+    text-align: left;
+    padding-right: 52px;
+}
+
+/* Nút X đóng: dùng lại kiểu nút icon tròn nhưng đổi sang sticky để khi
+   cuộn danh sách Cài đặt (khá dài) thì nút vẫn nằm trong tầm bấm.
+   float: right cho nút nằm bên phải mà vẫn ở trong luồng -> sticky mới chạy;
+   margin âm bù lại padding của .screen để nút về đúng góc card. */
+.close-btn {
+    position: sticky;
+    top: 16px;
+    right: auto;
+    float: right;
+    margin-top: calc(16px - clamp(1.5rem, 4vw, 2.75rem));
+    margin-right: calc(16px - clamp(1.5rem, 4vw, 2.75rem));
+}
+
+/* Bỏ hiệu ứng xoay 45° của bánh răng — dấu X xoay trông rất lạ */
+.close-btn:hover {
+    transform: none;
+}
+
 .setting-row {
     display: flex;
     align-items: center;
